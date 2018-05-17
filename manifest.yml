@@ -1,0 +1,11 @@
+---
+name: Example Shiny App
+category: Interactive Apps
+subcategory: Servers
+role: batch_connect
+description: |
+  This app will launch a [Shiny App] using a **shared node** on the [Owens
+  cluster].
+
+  [Shiny App]: https://shiny.rstudio.com/
+  [Owens cluster]: https://www.osc.edu/resources/technical_support/supercomputers/owens
