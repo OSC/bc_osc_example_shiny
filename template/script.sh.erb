@@ -6,7 +6,7 @@
 
   # Configure R
   r_script = session.staged_root.join("launcher.R")
-  r_module = "intel/16.0.3 R/3.4.2"
+  r_env    = "module load intel/16.0.3 R/3.4.2"
   r_cmd    = "R"
 
   # Configure Shiny
@@ -14,10 +14,10 @@
   app_sock = cache_root.join("app.sock")
 
   # Configure NGINX
-  nginx_conf   = session.staged_root.join("nginx.conf")
-  nginx_cache  = cache_root.join("nginx")
-  nginx_module = "singularity"
-  nginx_cmd    = <<-EOS.gsub(/^ {4}/, "")
+  nginx_conf  = session.staged_root.join("nginx.conf")
+  nginx_cache = cache_root.join("nginx")
+  nginx_env   = "module load singularity"
+  nginx_cmd   = <<-EOS.gsub(/^ {4}/, "")
     singularity run \
       -B "#{nginx_conf}:/usr/local/openresty/nginx/conf/nginx.conf" \
       -B "#{nginx_cache}" \
@@ -78,7 +78,7 @@ sed 's/^ \{2\}//' > "<%= nginx_conf %>" << EOT
         content_by_lua_block {
           ngx.req.read_body()
           local args, err = ngx.req.get_post_args()
-          if args.password == "${password}" then
+          if args and args.password == "${password}" then
             local session = require "resty.session".start()
             session.data.authenticated = true
             session:save()
@@ -116,9 +116,7 @@ cd "${HOME}"
 umask 077
 
 # Load the required environment
-<%- if r_module -%>
-module load <%= r_module %>
-<%- end -%>
+<%= r_env %>
 
 # Output debug info
 module list
@@ -150,9 +148,7 @@ done
 #
 
 # Load required environment
-<%- if nginx_module -%>
-  module load <%= nginx_module %>
-<%- end -%>
+<%= nginx_env %>
 
 # Output debug info
 module list
